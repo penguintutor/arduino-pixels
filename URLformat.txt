@@ -1,0 +1,17 @@
+
+
+URL for the pixels is as follows
+
+<address>/set?seq=<string seqname>&delay=<int speed>&reverse=<0/1>&colors=<#col1,#col2,#col3...>
+
+seqname = string, which must match with sequence function name - always required
+delay = integer of ms delay between changes
+reverse = 0 (default direction) 1 = reverse
+colors = list of html format colors eg. ffffff,000000 - must be full 6 chars (no #) 
+
+All text in url must be lowercase
+
+Any arguments not passed will be left at their previous setting (or default if not yet set). 
+
+
+If arguments are included but not valid then usually they will be ignored (left at previous) except colors which will be set based on valid entries only (until first invalid) or reset to default if no valid colors
