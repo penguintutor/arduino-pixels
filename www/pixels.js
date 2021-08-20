@@ -22,7 +22,7 @@ $(() => {
                 if (key == "description") description = val;
             });
         // Add to list
-        $('#sequences-list').append ("<div class=\"seq-select-div\">\n<button type=\"button\" id=\""+seq_name+"\"  title=\""+description+"\" class=\"seq-select-btn\" onclick=\"select_sequence('"+seq_name+"')\">"+title+"</button>\n</div>");
+        $('#sequences-list').append ("<li class=\"li-seq-select\">\n<button type=\"button\" id=\""+seq_name+"\"  title=\""+description+"\" class=\"seq-select-btn\" onclick=\"select_sequence('"+seq_name+"')\">"+title+"</button>\n</li>");
         // if this is the first then set it to the sequence
         if (sequence == "") sequence = seq_name;
         });
