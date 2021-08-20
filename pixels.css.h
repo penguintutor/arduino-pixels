@@ -1,5 +1,4 @@
 const char* pixels_css = R"=====(
-
 /* Set padding and margins to 0 then change later
 Helps with cross browser support */
 * {
@@ -45,6 +44,20 @@ ul ul ul { margin: 0;}
     width:  150px;
     height: 75px;
 }
+
+#sequences-list {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.li-seq-select {
+    float: left;
+    padding: 0;
+    margin: 0;
+}
+
 
 #divapplybuttons {
     background-color: #6666ff;

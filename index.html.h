@@ -1,5 +1,4 @@
 const char* index_html = R"=====(
-
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -14,7 +13,8 @@ const char* index_html = R"=====(
     <body>
         <div id="divapplybuttons"><button type="button" id="applybutton" onclick="apply()">Apply</button><button type="button" id="reversebutton" class="reverse-not-selected" onclick="reverse_toggle()">Reverse</button></div>
         <div id="sequences"><h2>Sequences</h2>
-          <div id="sequences-list"></div>
+          <ul id="sequences-list">
+          </ul>
         </div>
         <div id="options">
             <div id="speedoption">
