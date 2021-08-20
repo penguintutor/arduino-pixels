@@ -1,3 +1,7 @@
+# Arduino - exclude secrets
+arduino_secrets.h
+
+
 # Prerequisites
 *.d
 
