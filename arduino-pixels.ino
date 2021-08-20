@@ -1,6 +1,7 @@
 
 #include <WiFiNINA.h>
 #include <Adafruit_NeoPixel.h>
+#include "config.h"
 #include "arduino_secrets.h"
 #include "sequences.h"
 #include "index.html.h"
@@ -12,9 +13,6 @@
 char ssid[] = SECRET_SSID;        // network SSID (name)
 char pass[] = SECRET_PASS;        // network password (use for WPA, or use as key for WEP)
 int keyIndex = 0;                 // network key index number (needed only for WEP)
-
-#define LED_PIN 15 // Pin where NeoPixels are connected - Do not use PIN 25 (D2) - possible conflict with WiFi
-#define LED_COUNT 45  // How many NeoPixels?
 
 // what level of debug from serial console
 // higher number the more debug messages
@@ -38,7 +36,7 @@ Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 void setup() {
   Serial.begin(9600);      // initialize serial communication
 
-  WiFi.config({192,168,0,44}, {8,8,8,8}, {192,168,0,1}, {255,255,255,0});
+  WiFi.config({IP_ADDR}, {IP_DNS}, {IP_GW}, {IP_SUBNET});
 
   // check for the WiFi module:
   if (WiFi.status() == WL_NO_MODULE) {
@@ -47,13 +45,12 @@ void setup() {
     while (true);
 
   }
-
-  /*Unable to update wifi on RP2040 so commented out
-   * String fv = WiFi.firmwareVersion();
+  
+  String fv = WiFi.firmwareVersion();
   if (fv < WIFI_FIRMWARE_LATEST_VERSION) {
     Serial.println("Please upgrade the firmware");
 
-  }*/
+  }
   // attempt to connect to WiFi network:
   while (status != WL_CONNECTED) {
     if (DEBUG > 0) Serial.print("Attempting to connect to Network named: ");
@@ -71,7 +68,7 @@ void setup() {
   // Now setup NeoPixels
   strip.begin();           // INITIALIZE NeoPixel strip object (REQUIRED)
   strip.show();            // Turn OFF all pixels ASAP
-  strip.setBrightness(50); // Set BRIGHTNESS to about 1/5 (max = 255)
+  strip.setBrightness(BRIGHTNESS); // Set BRIGHTNESS 
 }
 
 void loop() {
