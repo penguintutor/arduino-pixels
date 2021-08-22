@@ -1,4 +1,5 @@
 
+#include <SPI.h>
 #include <WiFiNINA.h>
 #include <Adafruit_NeoPixel.h>
 #include "config.h"
@@ -45,12 +46,14 @@ void setup() {
     while (true);
 
   }
-  
-  String fv = WiFi.firmwareVersion();
+
+// Remove firmware version check - warns even when firmware update
+// or if there is no newer version
+/*  String fv = WiFi.firmwareVersion();
   if (fv < WIFI_FIRMWARE_LATEST_VERSION) {
     Serial.println("Please upgrade the firmware");
-
-  }
+  }*/
+  
   // attempt to connect to WiFi network:
   while (status != WL_CONNECTED) {
     if (DEBUG > 0) Serial.print("Attempting to connect to Network named: ");
@@ -263,7 +266,7 @@ void updatePixels (int new_sequence, int delay_value, bool reverse, uint32_t col
 // or -1 if not valid
 int get_sequence (String arg_value){
   for (int i=0; i < (sizeof(sequences)/sizeof(sequence)); i++){
-    if (sequences[i].seq_name == arg_value) return i;
+    if (String(sequences[i].seq_name) == arg_value) return i;
   }
   // if not found in array search return -1 for not found
   return -1;

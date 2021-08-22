@@ -1,4 +1,7 @@
-#define LED_PIN 15 // Pin where NeoPixels are connected - Do not use PIN 25 (D2) - possible conflict with WiFi
+// Pin where NeoPixels are connected
+// RP2040 using pin 15 (D3). Do not use PIN 25 (D2) - possible conflict with WiFi
+// UNO WiFi use pin 3 (D3)
+#define LED_PIN 15
 #define LED_COUNT 45  // How many NeoPixels?
 /* Brightness of neopixels. 
 Maximum is 255 - for lower brightness consider 50 */
@@ -11,4 +14,3 @@ Maximum is 255 - for lower brightness consider 50 */
 #define IP_DNS 8,8,8,8          // Google DNS
 #define IP_GW 192,168,0,1       // default gateway (router)
 #define IP_SUBNET 255,255,255,0 
-
