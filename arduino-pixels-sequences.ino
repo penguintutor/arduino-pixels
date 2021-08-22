@@ -97,3 +97,48 @@ int chaserSingleColor(int seq_position, bool reverse, uint32_t colors[], int num
   }
   return seq_position;
 }
+
+
+// chaser using only a single color at a time
+// show 4 LEDs on, followed by 4 LEDs off
+// Note if the number of pixels is divisible by 8 then change on single block
+// otherwise may change in a block of colors
+int chaserChangeColor(int seq_position, bool reverse, uint32_t colors[], int num_colors) {
+  int current_color = seq_position / strip.numPixels();
+//  Serial.print ("Current color : ");
+//  Serial.println (current_color);
+//  Serial.print ("Seq num : ");
+//  Serial.println (seq_position);
+  for (int i=0; i<strip.numPixels(); i++) {
+    if ((i%8 >= seq_position%8 && i%8 < seq_position%8 +4) || (i%8 >= seq_position%8 -7 && i%8 <= seq_position%8 -5)) {
+      int pixel_color;
+      if (i < seq_position - (strip.numPixels()* current_color)) {
+        pixel_color = current_color +1;
+        if (pixel_color >= num_colors) pixel_color = 0;
+      }
+      else pixel_color = current_color;
+      //Serial.print ("Pixel color : ");
+      //Serial.println (pixel_color);
+      strip.setPixelColor(i, colors[pixel_color]);
+//      Serial.print (pixel_color);
+//      Serial.print (" ");
+    }
+    else {
+      strip.setPixelColor(i, strip.Color(0,0,0));
+//      Serial.print ("- ");
+    }
+  }
+//  Serial.println("");
+  strip.show();
+  if (reverse == true) {
+    seq_position --;
+    if (seq_position < 0) {
+      seq_position = (num_colors*strip.numPixels())-1;
+    }
+  }
+  else {
+    seq_position ++;
+    if (seq_position >= num_colors*strip.numPixels()) seq_position = 0;
+  }
+  return seq_position;
+}
