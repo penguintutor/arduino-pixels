@@ -73,6 +73,7 @@ int chaser(int seq_position, bool reverse, uint32_t colors[], int num_colors) {
 }
 
 
+/* This is not currently used - same as chaserChangeColor if you only select one color */
 // chaser using only a single color
 // show 4 LEDs on, followed by 4 LEDs off
 int chaserSingleColor(int seq_position, bool reverse, uint32_t colors[], int num_colors) {
@@ -141,4 +142,116 @@ int chaserChangeColor(int seq_position, bool reverse, uint32_t colors[], int num
     if (seq_position >= num_colors*strip.numPixels()) seq_position = 0;
   }
   return seq_position;
+}
+
+// chaser with black background
+// If multiple colours then a single block of colours goes across the strip
+// If single color selected then show 4 LEDs on, followed by 4 LEDs off
+int chaserBackground(int seq_position, bool reverse, uint32_t colors[], int num_colors) {
+  // create a separate array for colors if only single color selected
+  // this simplifies remaining code
+  uint32_t *chase_colors = colors;
+  uint32_t new_colors[4] = {colors[0],colors[0],colors[0],colors[0]};
+  if (num_colors < 2) {
+    chase_colors = new_colors;
+    num_colors = 4;
+  }
+  // now just use chase_colors and it will either use original colors or be 4 x colors[0]
+
+  // pixel_color set this for this pixel
+  uint32_t pixel_color = -1;
+  for (int i=0; i<strip.numPixels(); i++) {
+    // if seq position before this pixel
+    if ((i >= seq_position && i < seq_position + num_colors )) {
+      pixel_color = chase_colors[i - seq_position];
+    }
+    // if wrap around
+    else if (i < seq_position-strip.numPixels()+num_colors) {
+      pixel_color = chase_colors[strip.numPixels() - seq_position + i];
+    }
+    // otherwise background
+    else {
+      pixel_color = strip.Color(0,0,0);
+    }
+    strip.setPixelColor(i, pixel_color);
+
+  }
+  strip.show();
+  if (reverse == true) {
+    seq_position --;
+    if (seq_position < 0) {
+      seq_position = strip.numPixels()-1;
+    }
+  }
+  else {
+    seq_position ++;
+    if (seq_position >= strip.numPixels()) seq_position = 0;
+  }
+  return seq_position;
+}
+
+// From first pixel to last add LED at a time then stay lit
+int colorWipeOn(int seq_position, bool reverse, uint32_t colors[], int num_colors) {
+  // pixel_color set this for this pixel
+  int current_color = 0;
+  for (int i=0; i<strip.numPixels(); i++) {
+    if ((reverse == false && i <= seq_position )||(reverse == true && i >= strip.numPixels() - seq_position -1)) {
+      strip.setPixelColor(i, colors[current_color]);
+    }
+    // otherwise off
+    else {
+      strip.setPixelColor(i, strip.Color(0,0,0));
+    }
+    // increment color regardless so we don't break sequence
+    current_color += 1;
+    if (current_color >= num_colors) current_color = 0;
+  }
+  strip.show();
+
+
+  seq_position ++;
+  if (seq_position >= strip.numPixels()) seq_position = strip.numPixels()-1;
+
+  return seq_position;
+}
+
+// From all on remove LED at a time then stay off
+int colorWipeOff(int seq_position, bool reverse, uint32_t colors[], int num_colors) {
+
+  // pixel_color set this for this pixel
+  int current_color = 0;
+  for (int i=0; i<strip.numPixels(); i++) {
+    if ((reverse == false && i >= seq_position )||(reverse == true && i <= strip.numPixels() - seq_position -1)) {
+      strip.setPixelColor(i, colors[current_color]);
+    }
+    // otherwise off
+    else {
+      strip.setPixelColor(i, strip.Color(0,0,0));
+    }
+    // increment color regardless so we don't break sequence
+    current_color += 1;
+    if (current_color >= num_colors) current_color = 0;
+
+  }
+  strip.show();
+
+  seq_position ++;
+  if (seq_position >= strip.numPixels()) seq_position = strip.numPixels();
+  return seq_position;
+}
+
+// turn all on one at a time, then all off again
+int colorWipeOnOff(int seq_position, bool reverse, uint32_t colors[], int num_colors) {
+  // works by having seq_position 0 to 2 x number pixels
+  // if < number pixels then turn on, if > then turn off
+  if (seq_position < strip.numPixels()) {
+    colorWipeOn (seq_position, reverse, colors, num_colors);
+  }
+  else {
+    colorWipeOff (seq_position - strip.numPixels(), reverse, colors, num_colors);
+  }
+  seq_position ++;
+  if (seq_position > (strip.numPixels()*2)-1) seq_position = 0;
+  return seq_position;
+  
 }
