@@ -1,4 +1,3 @@
-
 #include <SPI.h>
 #include <WiFiNINA.h>
 #include <Adafruit_NeoPixel.h>
@@ -230,6 +229,17 @@ void loop() {
     // close the connection:
     client.stop();
     if (DEBUG > 1) Serial.println("client disconnected");
+  }
+  if (DEBUG >= 5) {
+    Serial.print("Updating pixels ");
+    Serial.print(action);
+    Serial.print(" ");
+    Serial.print(delay_value);
+    Serial.print(" rev: ");
+    Serial.print(reverse);
+    Serial.print(" colors ");
+    Serial.print(num_colors);
+    Serial.println("");
   }
   updatePixels (action, delay_value, reverse, colors, num_colors);
 }
