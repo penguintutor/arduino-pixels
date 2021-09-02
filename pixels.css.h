@@ -137,6 +137,10 @@ ul ul ul { margin: 0;}
     background: #ffffff;
 }
 
+.colgrey {
+    background: #7f7f7f;
+}
+
 .colred {
     background: #ff0000;
 }
@@ -224,6 +228,5 @@ ul ul ul { margin: 0;}
 .reverse-not-selected {
     background-color: #ffffff;
 }
-
 
 )=====";
