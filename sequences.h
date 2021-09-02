@@ -7,6 +7,10 @@ int chaserBackground(int seq_position, bool reverse, uint32_t colors[], int num_
 int colorWipeOn(int seq_position, bool reverse, uint32_t colors[], int num_colors);
 int colorWipeOff(int seq_position, bool reverse, uint32_t colors[], int num_colors);
 int colorWipeOnOff(int seq_position, bool reverse, uint32_t colors[], int num_colors);
+int colorWipeInOn(int seq_position, bool reverse, uint32_t colors[], int num_colors);
+int colorWipeOutOn(int seq_position, bool reverse, uint32_t colors[], int num_colors);
+int colorWipeInOff(int seq_position, bool reverse, uint32_t colors[], int num_colors);
+int colorWipeOutOff(int seq_position, bool reverse, uint32_t colors[], int num_colors);
 int colorWipeInOut(int seq_position, bool reverse, uint32_t colors[], int num_colors);
 int colorWipeOutIn(int seq_position, bool reverse, uint32_t colors[], int num_colors);
 
@@ -28,6 +32,10 @@ struct sequence sequences[] {
     { .seq_name = "colorwipeon", .title = "Color Wipe On", .description = "From first pixel to last pixel add LED at a time then stay lit", .seqFunction = colorWipeOn },
     { .seq_name = "colorwipeoff", .title = "Color Wipe Off", .description = "From all on remove LED at a time then stay off", .seqFunction = colorWipeOff },
     { .seq_name = "colorwipeonoff", .title = "Color Wipe On Off", .description = "Turn on in sequence, then off again", .seqFunction = colorWipeOnOff },
+    { .seq_name = "colorwipeinon", .title = "Color Wipe In On", .description = "Turn on from outside to center. Starting at both ends.", .seqFunction = colorWipeInOn },
+    { .seq_name = "colorwipeouton", .title = "Color Wipe Out On", .description = "Turn on from center to outside. Starting at both ends.", .seqFunction = colorWipeOutOn },
+    { .seq_name = "colorwipeinoff", .title = "Color Wipe In Off", .description = "Turn off from outside to center. Starting at both ends.", .seqFunction = colorWipeInOff },
+    { .seq_name = "colorwipeoutoff", .title = "Color Wipe Out Off", .description = "Turn off from center to outside. Starting at both ends.", .seqFunction = colorWipeOutOff },
     { .seq_name = "colorwipeinout", .title = "Color Wipe In Out", .description = "Turn on in sequence going inwards, then out again. Starting at both ends.", .seqFunction = colorWipeInOut },
     { .seq_name = "colorwipeoutin", .title = "Color Wipe Out in", .description = "Turn on in sequence going outwards, then out again. Starting at both ends.", .seqFunction = colorWipeOutIn }
 };

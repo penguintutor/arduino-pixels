@@ -235,6 +235,7 @@ int colorWipeOff(int seq_position, bool reverse, uint32_t colors[], int num_colo
   return seq_position;
 }
 
+
 // turn all on one at a time, then all off again
 int colorWipeOnOff(int seq_position, bool reverse, uint32_t colors[], int num_colors) {
   // works by having seq_position 0 to 2 x number pixels
@@ -252,209 +253,260 @@ int colorWipeOnOff(int seq_position, bool reverse, uint32_t colors[], int num_co
 }
 
 
+
+
+
+// Helper function to increment or decrement color based on reverse = true / false
+int color_inc (int current_color, int num_colors, bool reverse) {
+  if (reverse == false) {
+    current_color ++;
+    if (current_color >= num_colors) current_color = 0;
+  }
+  else {
+    current_color --;
+    if (current_color < 0) current_color = num_colors -1;
+  }
+  return current_color;
+}
+
+
 // From outside going inwards (both ends)
 // Color applies equally from both ends
-// reverse - reverses color order
+// goes from sequence 0 (none on) until 
+//     sequence = (num_pixels/2)+1 if even
+//     sequence = (num_pixels/2)+2 if odd 
 int colorWipeInOn(int seq_position, bool reverse, uint32_t colors[], int num_colors) {
-  // pixel_color set this for this pixel
+
+  int num_pixels = strip.numPixels(); // avoid multiple function calls and simplify code
+  // index of the last pixel
+  int pixel_last_pair = (num_pixels/2) - 1; // If odd number of pixels then we have one more after this value
   int current_color = 0;
-  int num_pixels = strip.numPixels();           // reduce function calls by saving value in variable
-  if (reverse) current_color = num_colors-1;
-  int i;
-  for (i=0; i<num_pixels/2; i++) {
-    if (i <= seq_position ) {
+  // if reverse then we need color based on center
+  if (reverse) {
+    current_color = (num_pixels/2) % num_colors;
+    // if even subtract 1
+    if (num_pixels % 2 == 0) current_color --;
+    if (current_color < 0) current_color = num_colors -1;
+  }
+  for (int i=0; i<=pixel_last_pair; i++) {
+    if (i<seq_position-1) {
       strip.setPixelColor(i, colors[current_color]);
       strip.setPixelColor(num_pixels-1-i, colors[current_color]);
     }
-    // otherwise off
     else {
       strip.setPixelColor(i, strip.Color(0,0,0));
       strip.setPixelColor(num_pixels-1-i, strip.Color(0,0,0));
     }
-    // increment color
-    if (reverse == false){
-      current_color ++;
-      if (current_color >= num_colors) current_color = 0;
+    // Increment color
+    current_color = color_inc (current_color, num_colors, reverse);
+  }
+  // if odd number pixels then we have one more
+  if (num_pixels %2 == 1) {
+    if (pixel_last_pair+1 < seq_position-1) {
+      strip.setPixelColor(pixel_last_pair+1, colors[current_color]);
     }
     else {
-      current_color --; 
-      if (current_color < 0) current_color = num_colors -1;
+      strip.setPixelColor(pixel_last_pair+1, strip.Color(0,0,0));
     }
   }
-
-  // if we have an odd number of pixels then handle odd one afterwards
-  if (strip.numPixels() % 2 == 1) {
-    if (i <= seq_position ) {
-      strip.setPixelColor(i, colors[current_color]);
-    }
-  }
-  
   strip.show();
-  
-  seq_position ++;
-  // stop when reach end
-  if (seq_position >= num_pixels/2 + 1) seq_position = num_pixels/2 + 1;
-
+  // only increment sequence if we are not at end
+  // if even
+  if (num_pixels %2 == 0 && seq_position <= pixel_last_pair + 1) seq_position ++;
+  // if odd
+  else if (num_pixels %2 == 1 && seq_position <= pixel_last_pair + 2) seq_position ++;
   return seq_position;
 }
+
+// From inside going outwards (both ends)
+// Color applies equally from both ends
+// goes from sequence 0 (none on) until 
+//     sequence = (num_pixels/2)+1 if even
+//     sequence = (num_pixels/2)+2 if odd 
+int colorWipeOutOn(int seq_position, bool reverse, uint32_t colors[], int num_colors) {
+  int num_pixels = strip.numPixels(); // avoid multiple function calls and simplify code
+  // index of the last pixel
+  int pixel_last_pair = (num_pixels/2) - 1; // If odd number of pixels then we have one more after this value
+  int current_color = 0;
+  // if reverse then we need color based on center
+  if (reverse) {
+    current_color = (num_pixels/2) % num_colors;
+    // if even subtract 1
+    if (num_pixels % 2 == 0) current_color --;
+    if (current_color < 0) current_color = num_colors -1;
+  }
+  for (int i=0; i<=pixel_last_pair; i++) {
+    if (i>= pixel_last_pair - seq_position +1) {
+      strip.setPixelColor(i, colors[current_color]);
+      strip.setPixelColor(num_pixels-1-i, colors[current_color]);
+      //Serial.print (i);
+    }
+    else {
+      strip.setPixelColor(i, strip.Color(0,0,0));
+      strip.setPixelColor(num_pixels-1-i, strip.Color(0,0,0));
+      //Serial.print (".");
+    }
+    // Increment color
+    current_color = color_inc (current_color, num_colors, reverse);
+  }
+  // if odd number pixels then we have one more
+  if (num_pixels %2 == 1) {
+    if (pixel_last_pair+1 >= pixel_last_pair - seq_position +1) {
+      strip.setPixelColor(pixel_last_pair+1, colors[current_color]);
+    }
+    else {
+      strip.setPixelColor(pixel_last_pair+1, strip.Color(0,0,0));
+    }
+  }
+  strip.show();
+  // only increment sequence if we are not at end
+  // if even
+  if (num_pixels %2 == 0 && seq_position <= pixel_last_pair + 1) seq_position ++;
+  // if odd
+  else if (num_pixels %2 == 1 && seq_position <= pixel_last_pair + 2) seq_position ++;
+  return seq_position;
+}
+
 
 
 // From outside going inwards (both ends) turning off
 // Color applies equally from both ends
-// reverse - reverses color order
+// goes from sequence 0 (all on) until 
+//     sequence = (num_pixels/2)+1 if even
+//     sequence = (num_pixels/2)+2 if odd 
 int colorWipeInOff(int seq_position, bool reverse, uint32_t colors[], int num_colors) {
-  // pixel_color set this for this pixel
+  int num_pixels = strip.numPixels(); // avoid multiple function calls and simplify code
+  // index of the last pixel
+  int pixel_last_pair = (num_pixels/2) - 1; // If odd number of pixels then we have one more after this value
   int current_color = 0;
-  int num_pixels = strip.numPixels();           // reduce function calls by saving value in variable
-  if (reverse) current_color = num_colors-1;
-  for (int i=0; i<num_pixels/2; i++) {
-    if (i >= seq_position ) {
+  // if reverse then we need color based on center
+  if (reverse) {
+    current_color = (num_pixels/2) % num_colors;
+    // if even subtract 1
+    if (num_pixels % 2 == 0) current_color --;
+    if (current_color < 0) current_color = num_colors -1;
+  }
+  for (int i=0; i<=pixel_last_pair; i++) {
+    if (i>= seq_position) {
       strip.setPixelColor(i, colors[current_color]);
       strip.setPixelColor(num_pixels-1-i, colors[current_color]);
+      //Serial.print (i);
     }
-    // otherwise off
     else {
       strip.setPixelColor(i, strip.Color(0,0,0));
       strip.setPixelColor(num_pixels-1-i, strip.Color(0,0,0));
+      //Serial.print (".");
     }
-    // increment color
-    if (reverse == false){
-      current_color ++;
-      if (current_color >= num_colors) current_color = 0;
+    // Increment color
+    current_color = color_inc (current_color, num_colors, reverse);
+  }
+  // if odd number pixels then we have one more
+  if (num_pixels %2 == 1) {
+    if (pixel_last_pair+1 >= seq_position) {
+      strip.setPixelColor(pixel_last_pair+1, colors[current_color]);
     }
     else {
-      current_color --; 
-      if (current_color < 0) current_color = num_colors -1;
+      strip.setPixelColor(pixel_last_pair+1, strip.Color(0,0,0));
     }
   }
   strip.show();
-  
-  seq_position ++;
-  // stop when reach end
-  if (seq_position >= num_pixels/2) seq_position = num_pixels/2;
-
+  // only increment sequence if we are not at end
+  // if even
+  if (num_pixels %2 == 0 && seq_position <= pixel_last_pair + 1) seq_position ++;
+  // if odd
+  else if (num_pixels %2 == 1 && seq_position <= pixel_last_pair + 2) seq_position ++;
   return seq_position;
 }
 
 
-// From inside going outwards (both ends)
+// From inwards going outwards (both ends) turning off
 // Color applies equally from both ends
-// reverse - reverses color order
-int colorWipeOutOn(int seq_position, bool reverse, uint32_t colors[], int num_colors) {
-  // pixel_color set this for this pixel
-  // use modulo against center of strip
-  int current_color = (strip.numPixels()/2) % num_colors;
-  if (reverse) current_color = num_colors-1-((strip.numPixels()/2) % num_colors);
-  // if it's an odd number of pixels then 0 is only one pixel
-  if (strip.numPixels() % 2 == 1) {
-    // Todo 
-  }
-  for (int i=0; i<=strip.numPixels()/2; i++) {
-    if (i <= seq_position ) {
-      strip.setPixelColor(strip.numPixels()/2 - i, colors[current_color]);
-      strip.setPixelColor(strip.numPixels()/2  -1 + i, colors[current_color]);
-    }
-    // otherwise off
-    else {
-      strip.setPixelColor(strip.numPixels()/2 - i, strip.Color(0,0,0));
-      strip.setPixelColor(strip.numPixels()/2 -1 + i, strip.Color(0,0,0));
-    }
-    // increment color (opposite to in as we go in out)
-    if (reverse == true){
-      current_color ++;
-      if (current_color >= num_colors) current_color = 0;
-    }
-    else {
-      current_color --; 
-      if (current_color < 0) current_color = num_colors -1;
-    }
-  }
-   
-  strip.show();
-
-
-  seq_position ++;
-  // stop when reach end
-  if (seq_position > (strip.numPixels()/2)+1) seq_position = strip.numPixels()/2 + 1;
-
-  return seq_position;
-}
-
-
-// From inside going outwards (both ends)
-// Color applies equally from both ends
-// reverse - reverses color order
+// goes from sequence 0 (all on) until 
+//     sequence = (num_pixels/2)+1 if even
+//     sequence = (num_pixels/2)+2 if odd 
 int colorWipeOutOff(int seq_position, bool reverse, uint32_t colors[], int num_colors) {
-  // pixel_color set this for this pixel
-  // use modulo against center of strip
-  int current_color = (strip.numPixels()/2) % num_colors;
-  // if odd number of pixels then don't subtract one
-  int sub_one = -1;
-  if (strip.numPixels() % 2 == 1) sub_one = 0;
-  if (reverse) current_color = num_colors-1-((strip.numPixels()/2) % num_colors);
-  for (int i=0; i<=strip.numPixels()/2; i++) {
-    if (i >= seq_position ) {
-      strip.setPixelColor(strip.numPixels()/2 - i, colors[current_color]);
-      strip.setPixelColor(strip.numPixels()/2  + sub_one + i, colors[current_color]);
-    }
-    // otherwise off
-    else {
-      strip.setPixelColor(strip.numPixels()/2 - i, strip.Color(0,0,0));
-      strip.setPixelColor(strip.numPixels()/2 + sub_one + i, strip.Color(0,0,0));
-    }
-    // increment color (opposite to in as we go in out)
-    if (reverse == true){
-      current_color ++;
-      if (current_color >= num_colors) current_color = 0;
+  int num_pixels = strip.numPixels(); // avoid multiple function calls and simplify code
+  // index of the last pixel
+  int pixel_last_pair = (num_pixels/2) - 1; // If odd number of pixels then we have one more after this value
+  int current_color = 0;
+  // if reverse then we need color based on center
+  if (reverse) {
+    current_color = (num_pixels/2) % num_colors;
+    // if even subtract 1
+    if (num_pixels % 2 == 0) current_color --;
+    if (current_color < 0) current_color = num_colors -1;
+  }
+  for (int i=0; i<=pixel_last_pair; i++) {
+    if (i<= pixel_last_pair - seq_position +1) {
+      strip.setPixelColor(i, colors[current_color]);
+      strip.setPixelColor(num_pixels-1-i, colors[current_color]);
+      //Serial.print (i);
     }
     else {
-      current_color --; 
-      if (current_color < 0) current_color = num_colors -1;
+      strip.setPixelColor(i, strip.Color(0,0,0));
+      strip.setPixelColor(num_pixels-1-i, strip.Color(0,0,0));
+      //Serial.print (".");
+    }
+    // Increment color
+    current_color = color_inc (current_color, num_colors, reverse);
+  }
+  // if odd number pixels then we have one more
+  if (num_pixels %2 == 1) {
+    if (pixel_last_pair+1 <= pixel_last_pair - seq_position +1) {
+      strip.setPixelColor(pixel_last_pair+1, colors[current_color]);
+    }
+    else {
+      strip.setPixelColor(pixel_last_pair+1, strip.Color(0,0,0));
     }
   }
   strip.show();
-
-
-  seq_position ++;
-  // stop when reach end
-  if (seq_position > (strip.numPixels()/2)+1) seq_position = strip.numPixels()/2 + 1;
-
+  // only increment sequence if we are not at end
+  // if even
+  if (num_pixels %2 == 0 && seq_position <= pixel_last_pair + 1) seq_position ++;
+  // if odd
+  else if (num_pixels %2 == 1 && seq_position <= pixel_last_pair + 2) seq_position ++;
   return seq_position;
 }
+
+
 
 // colorWipeInOut
 //Turn on in sequence going inwards, then out again. Starting at both ends.
 int colorWipeInOut(int seq_position, bool reverse, uint32_t colors[], int num_colors) {
-  // works by having seq_position 0 to number pixels
-  // if < number pixels/2 then wipe in, if > then wipe out
-  if (seq_position <= strip.numPixels()/2) {
+  // set seq_count to the number of steps in each sequence
+  int seq_count = (strip.numPixels()/2) + 1;
+  // if odd then add one more
+  if (strip.numPixels() % 2 == 1) seq_count++;
+
+  if (seq_position <= seq_count) {
     colorWipeInOn (seq_position, reverse, colors, num_colors);
   }
   else {
-    colorWipeOutOff (seq_position-(strip.numPixels()/2), reverse, colors, num_colors);
+    colorWipeOutOff (seq_position-seq_count, reverse, colors, num_colors);
   }
 
   seq_position ++;
-  if (seq_position > (strip.numPixels() + 2)) seq_position = 0;
+  if (seq_position > (seq_count * 2)) seq_position = 0;
   return seq_position;
-  
 }
 
 
 // colorWipeOutIn
 //Turn on in sequence going outwards, then in again. Starting at both ends.
 int colorWipeOutIn(int seq_position, bool reverse, uint32_t colors[], int num_colors) {
-  // works by having seq_position 0 to number pixels
-  // if < number pixels/2 then wipe in, if > then wipe out
-  if (seq_position <= strip.numPixels()/2) {
+  // set seq_count to the number of steps in each sequence
+  int seq_count = (strip.numPixels()/2) + 1;
+  // if odd then add one more
+  if (strip.numPixels() % 2 == 1) seq_count++;
+
+  if (seq_position <= seq_count) {
     colorWipeOutOn (seq_position, reverse, colors, num_colors);
   }
   else {
-    colorWipeInOff (seq_position-(strip.numPixels()/2), reverse, colors, num_colors);
+    colorWipeInOff (seq_position-seq_count, reverse, colors, num_colors);
   }
 
   seq_position ++;
-  if (seq_position > (strip.numPixels() + 2)) seq_position = 0;
+  if (seq_position > (seq_count * 2)) seq_position = 0;
   return seq_position;
-  
 }
