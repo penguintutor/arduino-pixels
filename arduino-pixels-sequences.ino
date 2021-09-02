@@ -38,6 +38,41 @@ int allOff(int seq_position, bool reverse, uint32_t colors[], int num_colors) {
   return seq_position;                   //  Seq position not relevant for this so return current
 }
 
+// turns all LEDs on based on colors in colors array
+// flashes alternate between on and off
+// reverse option sets colors from right to left instead of left to right
+int flash(int seq_position, bool reverse, uint32_t colors[], int num_colors) {
+  if (seq_position != 0) {
+    for(int i=0; i<strip.numPixels(); i++) { // For each pixel in strip
+      strip.setPixelColor(i, strip.Color(0,0,0));
+    }
+  }
+  else if (reverse == false) {
+    int color_pos = 0;
+    for(int i=0; i<strip.numPixels(); i++) { // For each pixel in strip
+      // do we have a new color? if not then reset to position 0 and start again
+      if (color_pos >= num_colors) {
+        color_pos = 0;
+      }
+      strip.setPixelColor(i, colors[color_pos]);
+      color_pos ++;
+    }
+  }
+  else {
+    int color_pos = num_colors-1;
+    for(int i=0; i<strip.numPixels(); i++) { // For each pixel in strip
+      // do we have a new color? if not then reset to position 0 and start again
+      if (color_pos < 0) {
+        color_pos = num_colors-1;
+      }
+      strip.setPixelColor(i, colors[color_pos]);
+      color_pos --;
+    }
+  }
+  strip.show();                          //  Update strip
+  return 1 - seq_position;               // return 0 or 1
+}
+
 // Chaser - moves LEDs to left or right
 // Only uses colours specified unless only one color in which case use second as black
 // Colors in order passed to it (starting from first pixel)
@@ -120,11 +155,8 @@ int chaserChangeColor(int seq_position, bool reverse, uint32_t colors[], int num
     else {
       strip.setPixelColor(i, strip.Color(0,0,0));
 
-
-
     }
   }
-//  Serial.println("");
   strip.show();
   if (reverse == true) {
     seq_position --;
@@ -184,6 +216,64 @@ int chaserBackground(int seq_position, bool reverse, uint32_t colors[], int num_
   }
   return seq_position;
 }
+
+
+// Single LED chaser to end and then fill up
+// If multiple colours then color fills up at end - led gets it's final color
+int chaserFillEnd(int seq_position, bool reverse, uint32_t colors[], int num_colors) {
+
+  int working_seq = seq_position; // use to calculate how far in sequence
+  int static_leds = 0;            // how many leds from end are static color
+  int num_pixels = strip.numPixels();
+  int end_pixel = num_pixels;  // current end of pixels (when calculating pixel)
+
+  int current_color = 0;
+  if (reverse) {
+    current_color = (num_pixels % num_colors) -1;
+    if (current_color < 0) current_color = num_colors -1;
+  }
+
+  int moving_color = 0;   // Set an initial color, but change later
+  
+  // loop across all static pixels
+  while (working_seq >= end_pixel) {
+    working_seq -= end_pixel;
+    end_pixel --;
+    static_leds ++;
+  }
+
+  // now have number of leds to light at end (static)
+  // and which led to light as moving up 
+  // light up the static leds, turn all other LEDs off
+  for (int i=0; i<num_pixels; i++) {
+    if (i >= num_pixels - static_leds) {
+      strip.setPixelColor(i, colors[current_color]);
+    }
+    else {
+      strip.setPixelColor(i, strip.Color(0,0,0));
+    }
+
+    // is this last non-static (if so use for color of moving)
+    if (i == num_pixels - static_leds -1) {
+      moving_color = current_color;
+    }
+
+    // Increment color
+    current_color = color_inc (current_color, num_colors, reverse);
+    
+  }
+  
+
+  // set the moving pixel to the determined color
+  if (working_seq > 0) {
+    strip.setPixelColor(working_seq-1, colors[moving_color]);
+  }
+
+  strip.show();
+  if (static_leds >= num_pixels) return 0;
+  else return seq_position +1;
+}
+
 
 // From first pixel to last add LED at a time then stay lit
 int colorWipeOn(int seq_position, bool reverse, uint32_t colors[], int num_colors) {
@@ -339,12 +429,10 @@ int colorWipeOutOn(int seq_position, bool reverse, uint32_t colors[], int num_co
     if (i>= pixel_last_pair - seq_position +1) {
       strip.setPixelColor(i, colors[current_color]);
       strip.setPixelColor(num_pixels-1-i, colors[current_color]);
-      //Serial.print (i);
     }
     else {
       strip.setPixelColor(i, strip.Color(0,0,0));
       strip.setPixelColor(num_pixels-1-i, strip.Color(0,0,0));
-      //Serial.print (".");
     }
     // Increment color
     current_color = color_inc (current_color, num_colors, reverse);
