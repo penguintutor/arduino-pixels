@@ -228,10 +228,6 @@ int chaserFillEnd(int seq_position, bool reverse, uint32_t colors[], int num_col
   int end_pixel = num_pixels;  // current end of pixels (when calculating pixel)
 
   int current_color = 0;
-  if (reverse) {
-    current_color = (num_pixels % num_colors) -1;
-    if (current_color < 0) current_color = num_colors -1;
-  }
 
   int moving_color = 0;   // Set an initial color, but change later
   
@@ -247,13 +243,16 @@ int chaserFillEnd(int seq_position, bool reverse, uint32_t colors[], int num_col
   // light up the static leds, turn all other LEDs off
   for (int i=0; i<num_pixels; i++) {
     if (i >= num_pixels - static_leds) {
-      strip.setPixelColor(i, colors[current_color]);
+      // if reverse then go from far end instead of nearest
+      if (reverse) strip.setPixelColor(num_pixels -i -1, colors[current_color]);
+      else strip.setPixelColor(i, colors[current_color]);
     }
     else {
-      strip.setPixelColor(i, strip.Color(0,0,0));
+      if (reverse) strip.setPixelColor(num_pixels -i -1, strip.Color(0,0,0));
+      else strip.setPixelColor(i, strip.Color(0,0,0));
     }
 
-    // is this last non-static (if so use for color of moving)
+    // is this the last non-static (if so use for color of moving)
     if (i == num_pixels - static_leds -1) {
       moving_color = current_color;
     }
@@ -266,7 +265,8 @@ int chaserFillEnd(int seq_position, bool reverse, uint32_t colors[], int num_col
 
   // set the moving pixel to the determined color
   if (working_seq > 0) {
-    strip.setPixelColor(working_seq-1, colors[moving_color]);
+    if (reverse) strip.setPixelColor(num_pixels - working_seq, colors[moving_color]); 
+    else strip.setPixelColor(working_seq-1, colors[moving_color]);
   }
 
   strip.show();
