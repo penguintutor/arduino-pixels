@@ -602,6 +602,24 @@ long colorWipeOutIn(long seq_position, bool reverse, uint32_t colors[], int num_
 
 // rainbow
 // Rainbow cycle using color wheel (uses ColorHSV and gamma correction using gamma32)
-// color is handled different - it can be used to define which LEDs are lit or not
-// If set to a colour other than black then it's lit, if black then it's not
-//int colorWipeOutIn(long seq_position, bool reverse, uint32_t colors[], int num_colors);
+long rainbow(long seq_position, bool reverse, uint32_t colors[], int num_colors) {
+  // SPEEDFACTOR can be used to change the speed to make the colour change at a better position on the speed timeline
+  // A larger number moves faster but colour transitions are bigger, a smaller number is slow
+  // 1024 or 2048 is a reasonable compromise
+  #define SPEEDFACTOR 1024
+  int num_pixels = strip.numPixels();
+  for(int i=0; i<num_pixels; i++) {
+    int pixelHue = (seq_position * SPEEDFACTOR) + (i * 65536L / num_pixels);
+    if (reverse) strip.setPixelColor(num_pixels -i -1, strip.gamma32(strip.ColorHSV(pixelHue)));
+    else strip.setPixelColor(i, strip.gamma32(strip.ColorHSV(pixelHue)));
+  }
+  strip.show();
+
+  seq_position++;
+  if (seq_position >= 65536 / SPEEDFACTOR) {
+    seq_position = 0; 
+  }
+
+  return seq_position;
+
+}

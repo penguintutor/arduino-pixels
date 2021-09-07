@@ -1,4 +1,19 @@
+/* Define sequences for arduino-pixels */
+// All sequence functions must follow this format
+// seq_position is the position in the sequence, this needs is defined as long for the UNO WiFi which would otherwise be limited to (2^8)/2
 
+typedef long (*pfnSequence)(long seq_position, bool reverse, uint32_t colors[], int num_colors);
+
+struct sequence {
+        char * seq_name;            // Lower case - no spaces 
+        char * title;               // Value to show to user
+        char * description;         // Tool tip (if applicable)
+        int group;                  // Group together sequences (allows some to be excluded) 0 = basic, 1 = common (some chasers etc.), 2 = extra, 4 = rare
+        pfnSequence seqFunction;    // ptr to function
+};
+
+
+// define all sequences here. All these parameters are required even if the sequence doesn't use them (eg. allOff does not use colors or num_colors)
 long allOn(long seq_position, bool reverse, uint32_t colors[], int num_colors);
 long allOff(long seq_position, bool reverse, uint32_t colors[], int num_colors);
 long flash(long seq_position, bool reverse, uint32_t colors[], int num_colors);
@@ -17,16 +32,8 @@ long colorWipeInOut(long seq_position, bool reverse, uint32_t colors[], int num_
 long colorWipeOutIn(long seq_position, bool reverse, uint32_t colors[], int num_colors);
 long rainbow(long seq_position, bool reverse, uint32_t colors[], int num_colors);
 
-typedef long (*pfnSequence)(long seq_position, bool reverse, uint32_t colors[], int num_colors);
-
-struct sequence {
-        char * seq_name;            // Lower case - no spaces 
-        char * title;               // Value to show to user
-        char * description;         // Tool tip (if applicable)
-        int group;                  // Group together sequences (allows some to be excluded) 0 = basic, 1 = common (some chasers etc.), 2 = extra, 4 = rare
-        pfnSequence seqFunction;    // ptr to function
-};
-
+// Add new sequences to this structure. This is used for web page to know what options are available
+// The group argument can be used to group certain sequences together (eg. to only show certain sequences or display on a different tab)
 struct sequence sequences[] {
     { .seq_name = "alloff", .title = "All Off", .description = "Turn all LEDs off", .group = 0, .seqFunction = allOff},
     { .seq_name = "allon", .title = "All On", .description = "Turn all LEDs on", .group = 0, .seqFunction = allOn },    
@@ -43,5 +50,6 @@ struct sequence sequences[] {
     { .seq_name = "colorwipeinoff", .title = "Color Wipe In Off", .description = "Turn off from outside to center. Starting at both ends.", .group = 4, .seqFunction = colorWipeInOff },
     { .seq_name = "colorwipeoutoff", .title = "Color Wipe Out Off", .description = "Turn off from center to outside. Starting at both ends.", .group = 4, .seqFunction = colorWipeOutOff },
     { .seq_name = "colorwipeinout", .title = "Color Wipe In Out", .description = "Turn on in sequence going inwards, then out again. Starting at both ends.", .group = 3, .seqFunction = colorWipeInOut },
-    { .seq_name = "colorwipeoutin", .title = "Color Wipe Out in", .description = "Turn on in sequence going outwards, then out again. Starting at both ends.", .group = 3, .seqFunction = colorWipeOutIn }
+    { .seq_name = "colorwipeoutin", .title = "Color Wipe Out in", .description = "Turn on in sequence going outwards, then out again. Starting at both ends.", .group = 3, .seqFunction = colorWipeOutIn },
+    { .seq_name = "rainbow", .title = "Rainbow sequence", .description = "Display a rainbow color sequence which moves along the lights.", .group = 3, .seqFunction = rainbow }
 };

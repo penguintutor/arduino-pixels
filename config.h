@@ -2,7 +2,7 @@
 // RP2040 using pin 15 (D3). Do not use PIN 25 (D2) - possible conflict with WiFi
 // UNO WiFi use pin 3 (D3)
 #define LED_PIN 15
-#define LED_COUNT 96  // How many NeoPixels?
+#define LED_COUNT 65  // How many NeoPixels?
 /* Brightness of neopixels. 
 Maximum is 255 - for lower brightness consider 50 */
 #define BRIGHTNESS 50 
