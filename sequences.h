@@ -1,23 +1,23 @@
 
-int allOn(int seq_position, bool reverse, uint32_t colors[], int num_colors);
-int allOff(int seq_position, bool reverse, uint32_t colors[], int num_colors);
-int flash(int seq_position, bool reverse, uint32_t colors[], int num_colors);
-int chaser(int seq_position, bool reverse, uint32_t colors[], int num_colors);
-int chaserChangeColor(int seq_position, bool reverse, uint32_t colors[], int num_colors);
-int chaserBackground(int seq_position, bool reverse, uint32_t colors[], int num_colors);
-int chaserFillEnd(int seq_position, bool reverse, uint32_t colors[], int num_colors);
-int colorWipeOn(int seq_position, bool reverse, uint32_t colors[], int num_colors);
-int colorWipeOff(int seq_position, bool reverse, uint32_t colors[], int num_colors);
-int colorWipeOnOff(int seq_position, bool reverse, uint32_t colors[], int num_colors);
-int colorWipeInOn(int seq_position, bool reverse, uint32_t colors[], int num_colors);
-int colorWipeOutOn(int seq_position, bool reverse, uint32_t colors[], int num_colors);
-int colorWipeInOff(int seq_position, bool reverse, uint32_t colors[], int num_colors);
-int colorWipeOutOff(int seq_position, bool reverse, uint32_t colors[], int num_colors);
-int colorWipeInOut(int seq_position, bool reverse, uint32_t colors[], int num_colors);
-int colorWipeOutIn(int seq_position, bool reverse, uint32_t colors[], int num_colors);
+long allOn(long seq_position, bool reverse, uint32_t colors[], int num_colors);
+long allOff(long seq_position, bool reverse, uint32_t colors[], int num_colors);
+long flash(long seq_position, bool reverse, uint32_t colors[], int num_colors);
+long chaser(long seq_position, bool reverse, uint32_t colors[], int num_colors);
+long chaserChangeColor(long seq_position, bool reverse, uint32_t colors[], int num_colors);
+long chaserBackground(long seq_position, bool reverse, uint32_t colors[], int num_colors);
+long chaserFillEnd(long seq_position, bool reverse, uint32_t colors[], int num_colors);
+long colorWipeOn(long seq_position, bool reverse, uint32_t colors[], int num_colors);
+long colorWipeOff(long seq_position, bool reverse, uint32_t colors[], int num_colors);
+long colorWipeOnOff(long seq_position, bool reverse, uint32_t colors[], int num_colors);
+long colorWipeInOn(long seq_position, bool reverse, uint32_t colors[], int num_colors);
+long colorWipeOutOn(long seq_position, bool reverse, uint32_t colors[], int num_colors);
+long colorWipeInOff(long seq_position, bool reverse, uint32_t colors[], int num_colors);
+long colorWipeOutOff(long seq_position, bool reverse, uint32_t colors[], int num_colors);
+long colorWipeInOut(long seq_position, bool reverse, uint32_t colors[], int num_colors);
+long colorWipeOutIn(long seq_position, bool reverse, uint32_t colors[], int num_colors);
+long rainbow(long seq_position, bool reverse, uint32_t colors[], int num_colors);
 
-
-typedef int (*pfnSequence)(int seq_position, bool reverse, uint32_t colors[], int num_colors);
+typedef long (*pfnSequence)(long seq_position, bool reverse, uint32_t colors[], int num_colors);
 
 struct sequence {
         char * seq_name;            // Lower case - no spaces 

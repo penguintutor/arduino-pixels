@@ -2,7 +2,7 @@
 
 // turns all LEDs on based on colors in colors array
 // reverse option sets colors from right to left instead of left to right
-int allOn(int seq_position, bool reverse, uint32_t colors[], int num_colors) {
+long allOn(long seq_position, bool reverse, uint32_t colors[], int num_colors) {
   if (reverse == false) {
     int color_pos = 0;
     for(int i=0; i<strip.numPixels(); i++) { // For each pixel in strip
@@ -29,7 +29,7 @@ int allOn(int seq_position, bool reverse, uint32_t colors[], int num_colors) {
   return seq_position;                   //  Seq position not relevant for this so return current
 }
 
-int allOff(int seq_position, bool reverse, uint32_t colors[], int num_colors) {
+long allOff(long seq_position, bool reverse, uint32_t colors[], int num_colors) {
   for(int i=0; i<strip.numPixels(); i++) { // For each pixel in strip...
     // colors array is ignored - set to black
     strip.setPixelColor(i, strip.Color(0,0,0));
@@ -41,7 +41,7 @@ int allOff(int seq_position, bool reverse, uint32_t colors[], int num_colors) {
 // turns all LEDs on based on colors in colors array
 // flashes alternate between on and off
 // reverse option sets colors from right to left instead of left to right
-int flash(int seq_position, bool reverse, uint32_t colors[], int num_colors) {
+long flash(long seq_position, bool reverse, uint32_t colors[], int num_colors) {
   if (seq_position != 0) {
     for(int i=0; i<strip.numPixels(); i++) { // For each pixel in strip
       strip.setPixelColor(i, strip.Color(0,0,0));
@@ -78,7 +78,7 @@ int flash(int seq_position, bool reverse, uint32_t colors[], int num_colors) {
 // Colors in order passed to it (starting from first pixel)
 // forward direction is moving away from first pixel
 // reverse direction moves towards first pixel
-int chaser(int seq_position, bool reverse, uint32_t colors[], int num_colors) {
+long chaser(long seq_position, bool reverse, uint32_t colors[], int num_colors) {
   // special case if only one color then pretend we have two (next color will always be black)
   if (num_colors == 1){
     num_colors = 2;
@@ -111,7 +111,7 @@ int chaser(int seq_position, bool reverse, uint32_t colors[], int num_colors) {
 /* This is not currently used - same as chaserChangeColor if you only select one color */
 // chaser using only a single color
 // show 4 LEDs on, followed by 4 LEDs off
-int chaserSingleColor(int seq_position, bool reverse, uint32_t colors[], int num_colors) {
+long chaserSingleColor(long seq_position, bool reverse, uint32_t colors[], int num_colors) {
   for (int i=0; i<strip.numPixels(); i++) {
     if ((i%8 >= seq_position && i%8 < seq_position +4) || (i%8 >= seq_position -7 && i%8 <= seq_position -5)) {
       strip.setPixelColor(i, colors[0]);
@@ -139,7 +139,7 @@ int chaserSingleColor(int seq_position, bool reverse, uint32_t colors[], int num
 // show 4 LEDs on, followed by 4 LEDs off
 // Note if the number of pixels is divisible by 8 then change on single block
 // otherwise may change in a block of colors
-int chaserChangeColor(int seq_position, bool reverse, uint32_t colors[], int num_colors) {
+long chaserChangeColor(long seq_position, bool reverse, uint32_t colors[], int num_colors) {
   int current_color = seq_position / strip.numPixels();
   for (int i=0; i<strip.numPixels(); i++) {
     if ((i%8 >= seq_position%8 && i%8 < seq_position%8 +4) || (i%8 >= seq_position%8 -7 && i%8 <= seq_position%8 -5)) {
@@ -174,7 +174,7 @@ int chaserChangeColor(int seq_position, bool reverse, uint32_t colors[], int num
 // chaser with black background
 // If multiple colours then a single block of colours goes across the strip
 // If single color selected then show 4 LEDs on, followed by 4 LEDs off
-int chaserBackground(int seq_position, bool reverse, uint32_t colors[], int num_colors) {
+long chaserBackground(long seq_position, bool reverse, uint32_t colors[], int num_colors) {
   // create a separate array for colors if only single color selected
   // this simplifies remaining code
   uint32_t *chase_colors = colors;
@@ -220,7 +220,7 @@ int chaserBackground(int seq_position, bool reverse, uint32_t colors[], int num_
 
 // Single LED chaser to end and then fill up
 // If multiple colours then color fills up at end - led gets it's final color
-int chaserFillEnd(int seq_position, bool reverse, uint32_t colors[], int num_colors) {
+long chaserFillEnd(long seq_position, bool reverse, uint32_t colors[], int num_colors) {
 
   int working_seq = seq_position; // use to calculate how far in sequence
   int static_leds = 0;            // how many leds from end are static color
@@ -276,7 +276,7 @@ int chaserFillEnd(int seq_position, bool reverse, uint32_t colors[], int num_col
 
 
 // From first pixel to last add LED at a time then stay lit
-int colorWipeOn(int seq_position, bool reverse, uint32_t colors[], int num_colors) {
+long colorWipeOn(long seq_position, bool reverse, uint32_t colors[], int num_colors) {
   // pixel_color set this for this pixel
   int current_color = 0;
   for (int i=0; i<strip.numPixels(); i++) {
@@ -301,7 +301,7 @@ int colorWipeOn(int seq_position, bool reverse, uint32_t colors[], int num_color
 }
 
 // From all on remove LED at a time then stay off
-int colorWipeOff(int seq_position, bool reverse, uint32_t colors[], int num_colors) {
+long colorWipeOff(long seq_position, bool reverse, uint32_t colors[], int num_colors) {
 
   // pixel_color set this for this pixel
   int current_color = 0;
@@ -327,7 +327,7 @@ int colorWipeOff(int seq_position, bool reverse, uint32_t colors[], int num_colo
 
 
 // turn all on one at a time, then all off again
-int colorWipeOnOff(int seq_position, bool reverse, uint32_t colors[], int num_colors) {
+long colorWipeOnOff(long seq_position, bool reverse, uint32_t colors[], int num_colors) {
   // works by having seq_position 0 to 2 x number pixels
   // if < number pixels then turn on, if > then turn off
   if (seq_position < strip.numPixels()) {
@@ -347,7 +347,7 @@ int colorWipeOnOff(int seq_position, bool reverse, uint32_t colors[], int num_co
 
 
 // Helper function to increment or decrement color based on reverse = true / false
-int color_inc (int current_color, int num_colors, bool reverse) {
+long color_inc (int current_color, int num_colors, bool reverse) {
   if (reverse == false) {
     current_color ++;
     if (current_color >= num_colors) current_color = 0;
@@ -365,7 +365,7 @@ int color_inc (int current_color, int num_colors, bool reverse) {
 // goes from sequence 0 (none on) until 
 //     sequence = (num_pixels/2)+1 if even
 //     sequence = (num_pixels/2)+2 if odd 
-int colorWipeInOn(int seq_position, bool reverse, uint32_t colors[], int num_colors) {
+long colorWipeInOn(long seq_position, bool reverse, uint32_t colors[], int num_colors) {
 
   int num_pixels = strip.numPixels(); // avoid multiple function calls and simplify code
   // index of the last pixel
@@ -413,7 +413,7 @@ int colorWipeInOn(int seq_position, bool reverse, uint32_t colors[], int num_col
 // goes from sequence 0 (none on) until 
 //     sequence = (num_pixels/2)+1 if even
 //     sequence = (num_pixels/2)+2 if odd 
-int colorWipeOutOn(int seq_position, bool reverse, uint32_t colors[], int num_colors) {
+long colorWipeOutOn(long seq_position, bool reverse, uint32_t colors[], int num_colors) {
   int num_pixels = strip.numPixels(); // avoid multiple function calls and simplify code
   // index of the last pixel
   int pixel_last_pair = (num_pixels/2) - 1; // If odd number of pixels then we have one more after this value
@@ -462,7 +462,7 @@ int colorWipeOutOn(int seq_position, bool reverse, uint32_t colors[], int num_co
 // goes from sequence 0 (all on) until 
 //     sequence = (num_pixels/2)+1 if even
 //     sequence = (num_pixels/2)+2 if odd 
-int colorWipeInOff(int seq_position, bool reverse, uint32_t colors[], int num_colors) {
+long colorWipeInOff(long seq_position, bool reverse, uint32_t colors[], int num_colors) {
   int num_pixels = strip.numPixels(); // avoid multiple function calls and simplify code
   // index of the last pixel
   int pixel_last_pair = (num_pixels/2) - 1; // If odd number of pixels then we have one more after this value
@@ -512,7 +512,7 @@ int colorWipeInOff(int seq_position, bool reverse, uint32_t colors[], int num_co
 // goes from sequence 0 (all on) until 
 //     sequence = (num_pixels/2)+1 if even
 //     sequence = (num_pixels/2)+2 if odd 
-int colorWipeOutOff(int seq_position, bool reverse, uint32_t colors[], int num_colors) {
+long colorWipeOutOff(long seq_position, bool reverse, uint32_t colors[], int num_colors) {
   int num_pixels = strip.numPixels(); // avoid multiple function calls and simplify code
   // index of the last pixel
   int pixel_last_pair = (num_pixels/2) - 1; // If odd number of pixels then we have one more after this value
@@ -560,7 +560,7 @@ int colorWipeOutOff(int seq_position, bool reverse, uint32_t colors[], int num_c
 
 // colorWipeInOut
 //Turn on in sequence going inwards, then out again. Starting at both ends.
-int colorWipeInOut(int seq_position, bool reverse, uint32_t colors[], int num_colors) {
+long colorWipeInOut(long seq_position, bool reverse, uint32_t colors[], int num_colors) {
   // set seq_count to the number of steps in each sequence
   int seq_count = (strip.numPixels()/2) + 1;
   // if odd then add one more
@@ -581,7 +581,7 @@ int colorWipeInOut(int seq_position, bool reverse, uint32_t colors[], int num_co
 
 // colorWipeOutIn
 //Turn on in sequence going outwards, then in again. Starting at both ends.
-int colorWipeOutIn(int seq_position, bool reverse, uint32_t colors[], int num_colors) {
+long colorWipeOutIn(long seq_position, bool reverse, uint32_t colors[], int num_colors) {
   // set seq_count to the number of steps in each sequence
   int seq_count = (strip.numPixels()/2) + 1;
   // if odd then add one more
@@ -598,3 +598,10 @@ int colorWipeOutIn(int seq_position, bool reverse, uint32_t colors[], int num_co
   if (seq_position > (seq_count * 2)) seq_position = 0;
   return seq_position;
 }
+
+
+// rainbow
+// Rainbow cycle using color wheel (uses ColorHSV and gamma correction using gamma32)
+// color is handled different - it can be used to define which LEDs are lit or not
+// If set to a colour other than black then it's lit, if black then it's not
+//int colorWipeOutIn(long seq_position, bool reverse, uint32_t colors[], int num_colors);

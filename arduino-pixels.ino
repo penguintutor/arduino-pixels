@@ -249,7 +249,7 @@ void updatePixels (int new_sequence, int delay_value, bool reverse, uint32_t col
   // seq_position is used by sequence function to determine what it will next do
   // sequence function can manage how it works (eg. count up / count down)
   // will always be reset to 0 when the sequence changes otherwise it's under control of sequence function
-  static int seq_position = 0;
+  static long seq_position = 0;
   static unsigned long start_time = 0;
 
   // if change in sequence then reset seq_position
