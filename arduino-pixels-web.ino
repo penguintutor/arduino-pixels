@@ -62,7 +62,12 @@ void showJSON(WiFiClient client) {
 
     client.print("   \"description\": \"");
     client.print(sequences[i].description);
+    client.println("\",");
+
+    client.print("   \"group\": \"");
+    client.print(sequences[i].group);
     client.println("\"");
+    
     client.print("  }");
 
   }

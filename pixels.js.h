@@ -1,5 +1,6 @@
 const char* pixels_js = R"=====(
 
+
 // Only one sequence can be selected
 var sequence = "";
 var reverse = false;
@@ -21,11 +22,15 @@ $(() => {
                 if (key == "seq_name") seq_name = val;
                 if (key == "title") title = val;
                 if (key == "description") description = val;
+                if (key == "group") group = parseInt(val);
             });
-        // Add to list
-        $('#sequences-list').append ("<li class=\"li-seq-select\">\n<button type=\"button\" id=\""+seq_name+"\"  title=\""+description+"\" class=\"seq-select-btn\" onclick=\"select_sequence('"+seq_name+"')\">"+title+"</button>\n</li>");
-        // if this is the first then set it to the sequence
-        if (sequence == "") sequence = seq_name;
+            // Only show groups up to 3
+            if (group < 4) {
+                // Add to list
+                $('#sequences-list').append ("<li class=\"li-seq-select\">\n<button type=\"button\" id=\""+seq_name+"\"  title=\""+description+"\" class=\"seq-select-btn\" onclick=\"select_sequence('"+seq_name+"')\">"+title+"</button>\n</li>");
+                // if this is the first then set it to the sequence
+                if (sequence == "") sequence = seq_name;
+            }
         });
         // Set sequence 
         set_sequence();
