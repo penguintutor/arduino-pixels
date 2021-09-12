@@ -1,7 +1,7 @@
 // Pin where NeoPixels are connected
-// RP2040 using pin 15 (D3). Do not use PIN 25 (D2) - possible conflict with WiFi
-// UNO WiFi use pin 3 (D3)
-#define LED_PIN 15
+// RP2040 using pin 17 (D5). Do not use PIN 25 (D2) - possible conflict with WiFi
+// UNO WiFi use pin 5 (D5), Nano IOT use pin 5 (D5 / PA05)
+#define LED_PIN 17
 #define LED_COUNT 65  // How many NeoPixels?
 /* Brightness of neopixels. 
 Maximum is 255 - for lower brightness consider 50 */

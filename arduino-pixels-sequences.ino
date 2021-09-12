@@ -33,8 +33,8 @@ long allOff(long seq_position, bool reverse, uint32_t colors[], int num_colors) 
   for(int i=0; i<strip.numPixels(); i++) { // For each pixel in strip...
     // colors array is ignored - set to black
     strip.setPixelColor(i, strip.Color(0,0,0));
-    strip.show();                          //  Update strip
   }
+  strip.show();                          //  Update strip
   return seq_position;                   //  Seq position not relevant for this so return current
 }
 
