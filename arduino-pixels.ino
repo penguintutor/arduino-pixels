@@ -1,12 +1,15 @@
 #include <SPI.h>
 #include <WiFiNINA.h>
 #include <Adafruit_NeoPixel.h>
+#include <avr/pgmspace.h>
 #include "config.h"
 #include "arduino_secrets.h"
 #include "sequences.h"
 #include "index.html.h"
 #include "pixels.css.h"
 #include "pixels.js.h"
+#include "jquery.min.js.h"
+#include "jqueryui.min.js.h"
 
 
 // Sensitive information in arduino_secrets.h
@@ -17,7 +20,7 @@ int keyIndex = 0;                 // network key index number (needed only for W
 // what level of debug from serial console
 // higher number the more debug messages
 // recommend level 1 (includes occassional messages)
-#define DEBUG 1
+#define DEBUG 2
 
 int status = WL_IDLE_STATUS;
 WiFiServer server(80);
@@ -31,38 +34,53 @@ Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 #define URL_CSS 2
 #define URL_JS 3
 #define URL_JSON 4
+#define URL_JQUERY 5
+#define URL_JQUERYUI 6
 
 
 void setup() {
   Serial.begin(9600);      // initialize serial communication
 
-  WiFi.config({IP_ADDR}, {IP_DNS}, {IP_GW}, {IP_SUBNET});
-
-  // check for the WiFi module:
+ // check for the WiFi module:
   if (WiFi.status() == WL_NO_MODULE) {
     Serial.println("Communication with WiFi module failed!");
     // don't continue
     while (true);
-
   }
 
-// Remove firmware version check - warns even when firmware update
-// or if there is no newer version
-/*  String fv = WiFi.firmwareVersion();
-  if (fv < WIFI_FIRMWARE_LATEST_VERSION) {
-    Serial.println("Please upgrade the firmware");
-  }*/
+  // mode 0 - connect to existing wifi
+  if (MODE == 0) {
+    WiFi.config({IP_ADDR}, {IP_DNS}, {IP_GW}, {IP_SUBNET});
+ 
+    // attempt to connect to WiFi network:
+    while (status != WL_CONNECTED) {
+      if (DEBUG > 0) Serial.print("Attempting to connect to Network named: ");
+      if (DEBUG > 0) Serial.println(ssid);                   // print the network name (SSID);
   
-  // attempt to connect to WiFi network:
-  while (status != WL_CONNECTED) {
-    if (DEBUG > 0) Serial.print("Attempting to connect to Network named: ");
-    if (DEBUG > 0) Serial.println(ssid);                   // print the network name (SSID);
-
-    // Connect to WPA/WPA2 network. Change this line if using open or WEP network:
-    status = WiFi.begin(ssid, pass);
-    // wait 10 seconds for connection:
-    delay(10000);
+      // Connect to WPA/WPA2 network. Change this line if using open or WEP network:
+      status = WiFi.begin(ssid, pass);
+    }
   }
+  // mode = 1 - AP mode
+  else if (MODE == 1) {
+    //WiFi.config({IP_ADDR});
+
+    // print the network name (SSID);
+    Serial.print("Creating access point named: ");
+    Serial.println(ssid);
+  
+    // Create open network. Change this line if you want to create an WEP network:
+    status = WiFi.beginAP(ssid, pass);
+    if (status != WL_AP_LISTENING) {
+      Serial.println("Creating access point failed");
+      // don't continue
+      while (true);
+    }
+    
+  }
+
+  // wait 10 seconds for connection:
+  delay(10000);
 
   server.begin();                           // start the web server on port 80
   if (DEBUG > 0) printWifiStatus();                        // you're connected now, so print out the status
@@ -74,6 +92,24 @@ void setup() {
 }
 
 void loop() {
+  if (MODE == 1) {
+    // compare the previous status to the current status
+    if (status != WiFi.status()) {
+      // it has changed update the variable
+      status = WiFi.status();
+  
+      if (status == WL_AP_CONNECTED) {
+        // a device has connected to the AP
+        Serial.println("Device connected to AP");
+      } else {
+        // a device has disconnected from the AP, and we are back in listening mode
+        Serial.println("Device disconnected from AP");
+      }
+    }
+  }
+
+
+
 
   // What action to perform
   // position in sequences array for selected sequence
@@ -95,6 +131,8 @@ void loop() {
   // What page to reply with (it's only after action handled that we return page)
   static int web_req = URL_DEFAULT;
 
+
+  //Serial.println (server.status());
 
   WiFiClient client = server.available();   // listen for incoming clients
 
@@ -125,6 +163,14 @@ void loop() {
             }
             else if (web_req == URL_JSON) {
               showJSON(client);
+              web_req = URL_DEFAULT;
+            }
+            else if (web_req == URL_JQUERY) {
+              showJQuery(client);
+              web_req = URL_DEFAULT;
+            }
+            else if (web_req == URL_JQUERYUI) {
+              showJQueryUI(client);
               web_req = URL_DEFAULT;
             }
             // default return web page
@@ -159,6 +205,14 @@ void loop() {
           else if (url_string.startsWith("/sequences.json")) {
             if (DEBUG == 1) Serial.println ("Request: /sequences.json");
             web_req = URL_JSON;
+          }
+          else if (url_string.startsWith("/jquery.min.js")) {
+            if (DEBUG == 1) Serial.println ("Request: /jquery.min.js");
+            web_req = URL_JQUERY;
+          }
+          else if (url_string.startsWith("/jquery-ui.min.js")) {
+            if (DEBUG == 1) Serial.println ("Request: /jquery-ui.min.js");
+            web_req = URL_JQUERYUI;
           }
           // Sequence request
           else if (url_string.startsWith("/set")) {

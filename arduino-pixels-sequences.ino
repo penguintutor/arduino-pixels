@@ -26,6 +26,8 @@ long allOn(long seq_position, bool reverse, uint32_t colors[], int num_colors) {
     }
   }
   strip.show();                          //  Update strip
+  seq_position ++;
+  if (seq_position > 20) seq_position = 0;
   return seq_position;                   //  Seq position not relevant for this so return current
 }
 
@@ -35,6 +37,8 @@ long allOff(long seq_position, bool reverse, uint32_t colors[], int num_colors) 
     strip.setPixelColor(i, strip.Color(0,0,0));
   }
   strip.show();                          //  Update strip
+  seq_position ++;
+  if (seq_position > 10) seq_position = 0;
   return seq_position;                   //  Seq position not relevant for this so return current
 }
 
@@ -42,7 +46,7 @@ long allOff(long seq_position, bool reverse, uint32_t colors[], int num_colors) 
 // flashes alternate between on and off
 // reverse option sets colors from right to left instead of left to right
 long flash(long seq_position, bool reverse, uint32_t colors[], int num_colors) {
-  if (seq_position != 0) {
+  if (seq_position % 2 == 1) {
     for(int i=0; i<strip.numPixels(); i++) { // For each pixel in strip
       strip.setPixelColor(i, strip.Color(0,0,0));
     }
@@ -70,7 +74,9 @@ long flash(long seq_position, bool reverse, uint32_t colors[], int num_colors) {
     }
   }
   strip.show();                          //  Update strip
-  return 1 - seq_position;               // return 0 or 1
+  seq_position ++;
+  if (seq_position > 20) seq_position = 0;
+  return seq_position;               // return 0 or 1
 }
 
 // Chaser - moves LEDs to left or right
@@ -232,7 +238,7 @@ long chaserFillEnd(long seq_position, bool reverse, uint32_t colors[], int num_c
   int moving_color = 0;   // Set an initial color, but change later
   
   // loop across all static pixels
-  while (working_seq >= end_pixel) {
+  while (working_seq >= end_pixel && end_pixel > 0) {
     working_seq -= end_pixel;
     end_pixel --;
     static_leds ++;

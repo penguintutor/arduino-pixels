@@ -1,0 +1,99 @@
+
+void showJQuery(WiFiClient client) {
+  unsigned long start_time = millis();
+  char myChar;
+  // HTTP headers always start with a response code (e.g. HTTP/1.1 200 OK)
+  // and a content-type so the client knows what's coming, then a blank line:
+  client.println("HTTP/1.1 200 OK");
+  client.println("Content-type:text/javascript");
+  client.println();
+  Serial.println ("Starting jquery file");
+  char *char_ptr = (char *)jquery_min_js;
+  while (1) {
+    if ((byte)*char_ptr == 0) break;
+    myChar = *char_ptr;
+    client.print (myChar);
+    char_ptr ++;
+  }
+  client.println("");
+  Serial.println ("jquery_min_js complete");
+  unsigned long end_time = millis();
+  Serial.print ("Time taken: ");
+  Serial.print (end_time - start_time);
+  Serial.println ("");
+}
+
+
+
+10 at a time
+
+void showJQuery(WiFiClient client) {
+  unsigned long start_time = millis();
+  //char myChar;
+  char temp_string[11];
+  temp_string[10] = 0;
+  boolean last_string = false;
+  // HTTP headers always start with a response code (e.g. HTTP/1.1 200 OK)
+  // and a content-type so the client knows what's coming, then a blank line:
+  client.println("HTTP/1.1 200 OK");
+  client.println("Content-type:text/javascript");
+  client.println();
+  Serial.println ("Starting jquery file");
+  char *char_ptr = (char *)jquery_min_js;
+  while (1) {
+    for (int i = 0; i < 10; i++) { 
+      if ((byte)*char_ptr == 0) {
+        last_string = true;
+        temp_string[i] = 0;
+      }
+      //myChar = *char_ptr;
+      temp_string[i] = *char_ptr;
+      char_ptr ++;
+    }
+    client.print (temp_string);
+    if (last_string == true) break;
+  }
+  client.println("");
+  Serial.println ("jquery_min_js complete");
+  unsigned long end_time = millis();
+  Serial.print ("Time taken: ");
+  Serial.print (end_time - start_time);
+  Serial.println ("");
+}
+
+100 at a time
+
+
+void showJQuery(WiFiClient client) {
+  unsigned long start_time = millis();
+  //char myChar;
+  char temp_string[101];
+  temp_string[100] = 0;
+  boolean last_string = false;
+  // HTTP headers always start with a response code (e.g. HTTP/1.1 200 OK)
+  // and a content-type so the client knows what's coming, then a blank line:
+  client.println("HTTP/1.1 200 OK");
+  client.println("Content-type:text/javascript");
+  client.println();
+  Serial.println ("Starting jquery file");
+  char *char_ptr = (char *)jquery_min_js;
+  while (1) {
+    for (int i = 0; i < 100; i++) { 
+      if ((byte)*char_ptr == 0) {
+        last_string = true;
+        temp_string[i] = 0;
+      }
+      //myChar = *char_ptr;
+      temp_string[i] = *char_ptr;
+      char_ptr ++;
+    }
+    client.print (temp_string);
+    if (last_string == true) break;
+  }
+  client.println("");
+  Serial.println ("jquery_min_js complete");
+  unsigned long end_time = millis();
+  Serial.print ("Time taken: ");
+  Serial.print (end_time - start_time);
+  Serial.println ("");
+}

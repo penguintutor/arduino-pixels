@@ -1,3 +1,4 @@
+// store index.html as a string literal
 const char* index_html = R"=====(
 <!DOCTYPE html>
 <html lang="en">
@@ -5,8 +6,8 @@ const char* index_html = R"=====(
         <meta charset="utf-8">
         <title>Arduino Pixels</title>
         <link href="pixels.css" rel="stylesheet" type="text/css" />
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js" type="text/javascript"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+        <script src="jquery.min.js" type="text/javascript"></script>
+        <script src="jquery-ui.min.js"></script>
         <script src="pixels.js" type="text/javascript"></script>
         </head>
 
@@ -20,7 +21,7 @@ const char* index_html = R"=====(
             <div id="speedoption">
                 <h2>Speed</h2>
                 <input type="range" min="0" max="1000" value="100" class="speed-slider" id="speed" onchange="show_speed()"/>
-                <p>Delay <span id="speed-val">1000</span> ms</p>
+                <p>Delay <span id="speed-val">900</span> ms</p>
             </div>
         </div>
         <div id="colors">
