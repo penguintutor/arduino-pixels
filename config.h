@@ -2,7 +2,7 @@
 // RP2040 using pin 17 (D5). Do not use PIN 25 (D2) - possible conflict with WiFi
 // UNO WiFi use pin 5 (D5), Nano IOT use pin 5 (D5 / PA05)
 #define LED_PIN 17
-#define LED_COUNT 28  // How many NeoPixels?
+#define LED_COUNT 96  // How many NeoPixels?
 //96 long strip - 44 internal test
 
 /* Brightness of neopixels. 
@@ -19,4 +19,4 @@ Maximum is 255 - for lower brightness consider 50 */
 
 // MODE 0 = connect to wifi
 // MODE 1 = Access point mode
-#define MODE 1
+#define MODE 0

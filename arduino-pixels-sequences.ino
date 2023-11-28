@@ -484,12 +484,10 @@ long colorWipeInOff(long seq_position, bool reverse, uint32_t colors[], int num_
     if (i>= seq_position) {
       strip.setPixelColor(i, colors[current_color]);
       strip.setPixelColor(num_pixels-1-i, colors[current_color]);
-      //Serial.print (i);
     }
     else {
       strip.setPixelColor(i, strip.Color(0,0,0));
       strip.setPixelColor(num_pixels-1-i, strip.Color(0,0,0));
-      //Serial.print (".");
     }
     // Increment color
     current_color = color_inc (current_color, num_colors, reverse);

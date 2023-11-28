@@ -1,7 +1,5 @@
-#include <SPI.h>
 #include <WiFiNINA.h>
 #include <Adafruit_NeoPixel.h>
-#include <avr/pgmspace.h>
 #include "config.h"
 #include "arduino_secrets.h"
 #include "sequences.h"

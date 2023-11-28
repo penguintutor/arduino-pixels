@@ -1,9 +1,9 @@
 Character at a time: 63787, 63600
 
-10 characters at a time: 6944, 6940
+10 characters at a time: 6944, 6940 - approx 10 x improvement (from 1)
 
-100 characters at a time: 1395, 1400
+100 characters at a time: 1395, 1400 - approx 5 x improvement (from 10)
 
-1000 characters at a time: 821, 822
+1000 characters at a time: 821, 822 - approx 2 x improvement (from 100)
 
 
